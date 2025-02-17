@@ -1,10 +1,8 @@
 package com.example.todotask.data
 
-import androidx.annotation.DrawableRes
 import com.example.todotask.R
 
-class DataSource(
-    ) {
+object DataSource{
     fun loadDemoToDoList(): List<MyCheckList> {
         return listOf(
             MyCheckList(
@@ -23,5 +21,4 @@ class DataSource(
             )
         )
     }
-
 }

@@ -7,15 +7,17 @@ import com.example.todotask.data.MyCheckList
 import com.example.todotask.data.MyCheckListElements
 
 class CheckListViewModel : ViewModel() {
-    private val dataSource = DataSource()
-    private var checkLists = mutableStateOf(dataSource.loadDemoToDoList())
+    var checkLists = mutableStateOf(DataSource.loadDemoToDoList())
+        private set
 
-    fun toggleTask(listIndex: Int, taskIndex: Int) {
+    fun toggleTask(listIndex: Int, taskIndex: Any) {
         val updatedLists = checkLists.value.toMutableList()
         val updatedTasks = updatedLists[listIndex].items.toMutableList()
 
         updatedTasks[taskIndex] =
             updatedTasks[taskIndex].copy(checked = !updatedTasks[taskIndex].checked)
+        updatedLists[listIndex] =
+            updatedLists[listIndex].copy(items = updatedTasks)
 
         checkLists.value = updatedLists
     }
