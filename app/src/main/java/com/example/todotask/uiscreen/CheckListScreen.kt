@@ -1,8 +1,8 @@
-package com.example.todotask.UiScreen
+package com.example.todotask.uiscreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -12,14 +12,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.example.todotask.viewmodel.CheckListViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CheckListScreen(viewModel: CheckListViewModel = viewModel()) {
-    Column{
+fun CheckListScreen(
+    modifier: Modifier = Modifier,
+    viewModel: CheckListViewModel = viewModel()) {
+    Column(modifier = modifier){
         TopAppBar(title = { Text("ToDo Huskelister") })
 
         var showIconPicker by remember { mutableStateOf(false) }
@@ -29,16 +31,23 @@ fun CheckListScreen(viewModel: CheckListViewModel = viewModel()) {
         }
 
         if(showIconPicker) {
-            TODO()
+            IconPickerDialog(
+                onIconSelected = { selectedIcon ->
+                    viewModel.addList(selectedIcon)
+                    showIconPicker = false
+                },
+                onDismiss = { showIconPicker = false }
+            )
         }
 
         LazyColumn {
-            items(viewModel.checkLists.value) {checkList ->
-                val index = viewModel.checkLists.value.indexOf(checkList)
+            itemsIndexed(viewModel.checkLists.value) { index, checkList ->
                 CheckListItem(
+                    index = index,
                     checkList = viewModel.checkLists.value[index],
                     onDelete = { viewModel.deleteList(index) },
-                    onToggle = { taskIndex -> viewModel.toggleTask(index, taskIndex)}
+                    onToggle = { taskIndex -> viewModel.toggleTask(index, taskIndex)},
+                    onRename = { i, newName -> viewModel.renameList(i, newName.toString()) }
                 )
             }
         }

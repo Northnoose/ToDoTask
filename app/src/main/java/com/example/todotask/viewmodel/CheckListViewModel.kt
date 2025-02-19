@@ -10,11 +10,11 @@ class CheckListViewModel : ViewModel() {
     var checkLists = mutableStateOf(DataSource.loadDemoToDoList())
         private set
 
-    fun toggleTask(listIndex: Int, taskIndex: Any) {
+    fun toggleTask(listIndex: Int, taskIndex: Int) {
         val updatedLists = checkLists.value.toMutableList()
         val updatedTasks = updatedLists[listIndex].items.toMutableList()
 
-        updatedTasks[taskIndex] =
+        updatedTasks[taskIndex as Int] =
             updatedTasks[taskIndex].copy(checked = !updatedTasks[taskIndex].checked)
         updatedLists[listIndex] =
             updatedLists[listIndex].copy(items = updatedTasks)
@@ -34,5 +34,11 @@ class CheckListViewModel : ViewModel() {
             icon,
             listOf(MyCheckListElements("Ny oppgave")))
         checkLists.value += newList
+    }
+
+    fun renameList(index: Int, newName: String) {
+        val updatedList = checkLists.value.toMutableList()
+        updatedList[index] = updatedList[index].copy(name = newName)
+        checkLists.value = updatedList
     }
 }
