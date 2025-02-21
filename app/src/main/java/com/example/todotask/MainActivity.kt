@@ -28,7 +28,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(viewModel: CheckListViewModel = viewModel()) {
     Scaffold(
@@ -41,7 +40,6 @@ fun MainScreen(viewModel: CheckListViewModel = viewModel()) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {

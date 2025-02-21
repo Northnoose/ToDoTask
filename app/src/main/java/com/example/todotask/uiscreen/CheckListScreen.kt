@@ -33,7 +33,7 @@ fun CheckListScreen(
         if(showIconPicker) {
             IconPickerDialog(
                 onIconSelected = { selectedIcon ->
-                    viewModel.addList(selectedIcon)
+                    viewModel.addList(selectedIcon, "Ny Liste")
                     showIconPicker = false
                 },
                 onDismiss = { showIconPicker = false }
@@ -44,10 +44,13 @@ fun CheckListScreen(
             itemsIndexed(viewModel.checkLists.value) { index, checkList ->
                 CheckListItem(
                     index = index,
-                    checkList = viewModel.checkLists.value[index],
+                    checkList = checkList,
                     onDelete = { viewModel.deleteList(index) },
                     onToggle = { taskIndex -> viewModel.toggleTask(index, taskIndex)},
-                    onRename = { i, newName -> viewModel.renameList(i, newName.toString()) }
+                    onRename = { newName -> viewModel.renameList(index, newName.toString()) },
+                    onEditItem = {indexItem, newText -> viewModel.renameItemList(index, indexItem, newText)},
+                    onDeleteItem = { indexItem -> viewModel.deleteListItem(index, indexItem) },
+                    onAddItem = { newText -> viewModel.addListItem(index, newText)}
                 )
             }
         }
