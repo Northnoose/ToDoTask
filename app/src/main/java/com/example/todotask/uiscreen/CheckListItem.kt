@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,7 +33,6 @@ enum class DialogType {
 
 @Composable
 fun CheckListItem(
-    index: Int,
     checkList: MyCheckList,
     onDelete: () -> Unit,
     onToggle: (Int) -> Unit,
@@ -45,7 +45,7 @@ fun CheckListItem(
     var newName by remember { mutableStateOf(checkList.name) }
     var isExpanded by remember { mutableStateOf(false) }
     var editedItems by remember { mutableStateOf(checkList.items.map {it.text}) }
-    var itemToDelete by remember { mutableStateOf(-1) }
+    var itemToDelete by remember { mutableIntStateOf(-1) }
     var dialogType by remember { mutableStateOf<DialogType?>(null) }
 
     ElevatedCard(
