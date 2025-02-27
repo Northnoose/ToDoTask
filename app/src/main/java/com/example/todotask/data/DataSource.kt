@@ -6,7 +6,7 @@ object DataSource{
     fun loadDemoToDoList(): List<MyCheckList> {
         return listOf(
             MyCheckList(
-                "Min ToDo Liste",
+                "Liste",
                 icon = R.drawable.baseline_shopping_cart_24,
                 items = listOf(
                             MyCheckListElements("Kjøp melk", false, 2),

@@ -67,5 +67,5 @@ class CheckListViewModel : ViewModel() {
         updatedItems[itemIndex] = updatedItems[itemIndex].copy(text = newText)
         updatedList[indexList] = updatedList[indexList].copy(items = updatedItems)
         checkLists.value = updatedList
-    }
-}
+    }}
+

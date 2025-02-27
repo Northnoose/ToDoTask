@@ -22,8 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -32,16 +32,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todotask.R
 import com.example.todotask.data.MyCheckList
-import androidx.compose.ui.res.stringResource
 
-
-
-// --- Ny composable for header med inline ikon ---
+// Ny composable for header med inline ikon i to-kolonnevisning
 @Composable
-fun CheckListHeaderWithIcon(name: String, @androidx.annotation.DrawableRes iconRes: Int, modifier: Modifier = Modifier) {
+fun CheckListHeaderWithIconTwoColumn(name: String, @androidx.annotation.DrawableRes iconRes: Int, modifier: Modifier = Modifier) {
     val inlineId = "listIcon"
     val annotatedText = buildAnnotatedString {
-
         appendInlineContent(inlineId, "[icon]")
         append(" ")
         append(name)
@@ -56,7 +52,7 @@ fun CheckListHeaderWithIcon(name: String, @androidx.annotation.DrawableRes iconR
         ) {
             Icon(
                 painter = painterResource(id = iconRes),
-                contentDescription = stringResource(R.string.contentdescription_ikon),
+                contentDescription = "Ikon",
                 tint = Color.Unspecified,
                 modifier = Modifier.size(20.dp)
             )
@@ -65,17 +61,17 @@ fun CheckListHeaderWithIcon(name: String, @androidx.annotation.DrawableRes iconR
     Text(
         text = annotatedText,
         inlineContent = inlineContent,
-        style = MaterialTheme.typography.headlineSmall.copy(fontSize = 20.sp),
+        style = MaterialTheme.typography.headlineSmall.copy(fontSize = 19.sp),
         modifier = modifier
     )
 }
 
-enum class DialogType {
+enum class DialogType2Col {
     LIST, ITEM
 }
 
 @Composable
-fun CheckListItem(
+fun CheckListItemTwoColumn(
     checkList: MyCheckList,
     onDelete: () -> Unit,
     onToggle: (Int) -> Unit,
@@ -84,27 +80,22 @@ fun CheckListItem(
     onDeleteItem: (Int) -> Unit,
     onAddItem: (String) -> Unit
 ) {
-    // Tilstander
     var isExpanded by remember { mutableStateOf(false) }
+    var isEditing by remember { mutableStateOf(false) }
     var isEditingListName by remember { mutableStateOf(false) }
-    var newName by remember { mutableStateOf(checkList.name) }
-    var isEditingTasks by remember { mutableStateOf(false) }
     var editedItems by remember { mutableStateOf(checkList.items.map { it.text }) }
     var itemToDelete by remember { mutableIntStateOf(-1) }
-    var dialogType by remember { mutableStateOf<DialogType?>(null) }
+    var dialogType by remember { mutableStateOf<DialogType2Col?>(null) }
     var showNewItemDialog by remember { mutableStateOf(false) }
     var newItemName by remember { mutableStateOf("") }
-
-    // teller
     val totalItems = checkList.items.size
     val checkedItems = checkList.items.count { it.checked }
     val allChecked = (totalItems > 0 && checkedItems == totalItems)
-
-    // Animasjon for boble
     val bubbleColor by animateColorAsState(
         targetValue = if (allChecked) Color(0xFF4CAF50) else MaterialTheme.colorScheme.primary,
         animationSpec = tween(durationMillis = 500)
     )
+    var newName by remember { mutableStateOf(checkList.name) }
 
     ElevatedCard(
         modifier = Modifier
@@ -112,12 +103,13 @@ fun CheckListItem(
             .padding(8.dp)
             .animateContentSize()
     ) {
-        Column {
-
+        Column(
+            modifier = Modifier.padding(8.dp)
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(bottom = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (isEditingListName) {
@@ -134,183 +126,182 @@ fun CheckListItem(
                     }) {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = stringResource(R.string.btn_lagre)
-
+                            contentDescription = "Lagre listenavn"
                         )
                     }
                 } else {
-                    CheckListHeaderWithIcon(
-                        name = checkList.name,
+                    CheckListHeaderWithIconTwoColumn(
+                        name = newName.ifBlank { stringResource(R.string.dialog_gi_navn_til_sjekkliste) },
                         iconRes = checkList.icon,
                         modifier = Modifier.weight(1f)
                     )
                     IconButton(onClick = { isEditingListName = true }) {
                         Icon(
                             imageVector = Icons.Default.Edit,
-                            contentDescription = stringResource(R.string.btn_rediger)
+                            contentDescription = "Rediger listenavn"
                         )
                     }
                 }
+            }
 
-                // Boble med antall avkryssede oppgaver
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Box(
                     modifier = Modifier
-                        .padding(horizontal = 13.dp)
+                        .padding(horizontal = 8.dp)
                         .clip(CircleShape)
                         .background(bubbleColor)
-                        .sizeIn(minWidth = 35.dp, minHeight = 35.dp),
+                        .size(32.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     if (allChecked) {
                         Icon(
                             imageVector = Icons.Default.Check,
-                            contentDescription = stringResource(R.string.contentdescription_alle_oppgaver_avkrysset),
+                            contentDescription = "Alle oppgaver fullført",
                             tint = Color.White
                         )
                     } else {
-                        Text(
-                            text = "$checkedItems/$totalItems",
-                            color = Color.White
-                        )
+                        Text("$checkedItems/$totalItems", color = Color.White)
                     }
                 }
-
-                // Expand/Collapse-knapp
                 IconButton(onClick = { isExpanded = !isExpanded }) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.baseline_arrow_back_ios_new_24),
-                        contentDescription = stringResource(R.string.contentdescription_expand_collapse),
+                        imageVector = androidx.compose.ui.graphics.vector.ImageVector.vectorResource(
+                            id = R.drawable.baseline_arrow_back_ios_new_24
+                        ),
+                        contentDescription = "Expand/Collapse",
                         modifier = Modifier.rotate(if (isExpanded) 90f else 270f)
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = { dialogType = DialogType2Col.LIST }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Slett liste",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                IconButton(onClick = { showNewItemDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Default.AddCircle,
+                        contentDescription = "Legg til oppgave",
+                        modifier = Modifier.size(32.dp)
                     )
                 }
             }
 
-            // Oppgaveliste
             if (isExpanded) {
-                checkList.items.forEachIndexed { itemIndex, task ->
+                checkList.items.forEachIndexed { indexItem, task ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(vertical = 1.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (isEditingTasks) {
+                        if (isEditing) {
                             TextField(
-                                value = editedItems[itemIndex],
+                                value = editedItems[indexItem],
                                 onValueChange = { newText ->
                                     editedItems = editedItems.toMutableList().apply {
-                                        set(itemIndex, newText)
+                                        set(indexItem, newText)
                                     }
                                 },
                                 singleLine = true,
-                                textStyle = MaterialTheme.typography.bodyLarge,
+                                textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
                                 modifier = Modifier.weight(1f)
                             )
                         } else {
                             Text(
                                 text = task.text,
+                                fontSize = 14.sp,
                                 modifier = Modifier.weight(1f)
                             )
                         }
                         IconButton(onClick = {
-                            itemToDelete = itemIndex
-                            dialogType = DialogType.ITEM
+                            itemToDelete = indexItem
+                            dialogType = DialogType2Col.ITEM
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(R.string.contentdescription_slett_oppgave)
-
+                                contentDescription = "Slett oppgave"
                             )
                         }
                         Checkbox(
                             checked = task.checked,
-                            onCheckedChange = { onToggle(itemIndex) }
+                            onCheckedChange = { onToggle(indexItem) }
                         )
                     }
                 }
-            }
 
-            // Bunn-rad med slett, ny oppgave og rediger oppgaver
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                IconButton(
-                    onClick = { dialogType = DialogType.LIST },
+                Row(
                     modifier = Modifier
-                        .padding(8.dp)
-                        .size(30.dp)
+                        .fillMaxWidth()
+                        .padding(top = 1.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = stringResource(R.string.contentdescription_slett_liste),
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
-                IconButton(
-                    onClick = { showNewItemDialog = true },
-                    modifier = Modifier.size(30.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AddCircle,
-                        contentDescription = stringResource(R.string.contentdescription_leg_til_oppgave),
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
-                IconButton(
-                    onClick = {
-                        if (isEditingTasks) {
-                            editedItems.forEachIndexed { i, newText ->
-                                onEditItem(i, newText)
+                    IconButton(
+                        onClick = {
+                            if (isEditing) {
+                                editedItems.forEachIndexed { i, newText ->
+                                    onEditItem(i, newText)
+                                }
+                                isEditing = false
+                            } else {
+                                isEditing = true
                             }
-                            isEditingTasks = false
-                        } else {
-                            isEditingTasks = true
                         }
-                    },
-                    modifier = Modifier.size(30.dp)
-                ) {
-                    Icon(
-                        imageVector = if (isEditingTasks) Icons.Default.Check else Icons.Default.Create,
-                        contentDescription = if (isEditingTasks)
-                            stringResource(R.string.contentdescription_lagre_oppgaver)
-                        else
-                            stringResource(R.string.contentdescription_rediger_oppgaver),
-                        modifier = Modifier.size(30.dp)
-                    )
+                    ) {
+                        Icon(
+                            imageVector = if (isEditing) Icons.Default.Check else Icons.Default.Create,
+                            contentDescription = if (isEditing) "Lagre oppgaver" else "Rediger oppgaver"
+                        )
+                    }
                 }
             }
         }
     }
 
     if (dialogType != null) {
-        ShowDeleteDialog(
-            showDialog = true,
-            onConfirmDelete = {
-                when (dialogType) {
-                    DialogType.LIST -> onDelete()
-                    DialogType.ITEM -> onDeleteItem(itemToDelete)
-                    null -> {}
+        AlertDialog(
+            onDismissRequest = { dialogType = null },
+            title = { Text(stringResource(R.string.dialog_bekreft_sletting)) },
+            text = { Text(stringResource(R.string.dialog_sikker_sletting)) },
+            confirmButton = {
+                Button(onClick = {
+                    when (dialogType) {
+                        DialogType2Col.LIST -> onDelete()
+                        DialogType2Col.ITEM -> onDeleteItem(itemToDelete)
+                        null -> {}
+                    }
+                    dialogType = null
+                }) {
+                    Text(stringResource(R.string.btn_slett))
+
                 }
-                dialogType = null
             },
-            onDismiss = { dialogType = null }
+            dismissButton = {
+                Button(onClick = { dialogType = null }) {
+                    Text(stringResource(R.string.btn_avbryt))
+                }
+            }
         )
     }
 
     if (showNewItemDialog) {
         AlertDialog(
             onDismissRequest = { showNewItemDialog = false },
-            title = { Text("Ny oppgave") },
+            title = { Text(stringResource(R.string.dialog_ny_oppgave)) },
             text = {
                 TextField(
                     value = newItemName,
                     onValueChange = { newItemName = it },
                     singleLine = true,
-                    label = { Text("Oppgavenavn") }
+                    label = { Text(stringResource(R.string.dialog_oppgavenavn)) }
                 )
             },
             confirmButton = {

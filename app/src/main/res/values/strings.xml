@@ -1,3 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Generelle tekster -->
     <string name="app_name">ToDoTask</string>
+
+    <!-- Hovedskjerm -->
+    <string name="title_mine_huskelister">Mine Huskelister</string>
+    <string name="text_vis_to_kolonner">Vis som 2 kolonner</string>
+    <string name="text_oppgaver_ferdig">%1$d av %2$d oppgaver er utført.</string>
+
+    <!-- Knappetekster -->
+    <string name="btn_leg_til_ny_sjekkliste">Legg til ny sjekkliste</string>
+    <string name="btn_ok">OK</string>
+    <string name="btn_avbryt">Avbryt</string>
+    <string name="btn_slett">Slett</string>
+    <string name="btn_rediger">Rediger</string>
+    <string name="btn_lagre">Lagre</string>
+
+
+    <!-- Dialoger -->
+    <string name="dialog_ny_oppgave">Ny oppgave</string>
+    <string name="dialog_oppgavenavn">Oppgavenavn</string>
+    <string name="dialog_gi_navn_til_sjekkliste">Gi navn til sjekklisten</string>
+    <string name="dialog_velg_ikon">Velg et ikon</string>
+    <string name="dialog_bekreft_sletting">Bekreft sletting</string>
+    <string name="dialog_sikker_sletting">Er du sikker på at du vil slette dette elementet?</string>
+    <string name="dialog_gi_navn_til_sjekkliste_2">Ny liste</string>
+
+
+    <!-- Innholdslister -->
+    <string name="contentdescription_ikon">Ikon</string>
+    <string name="contentdescription_slett_oppgave">Slett oppgave</string>
+    <string name="contentdescription_slett_liste">Slett liste</string>
+    <string name="contentdescription_leg_til_oppgave">Legg til oppgave</string>
+    <string name="contentdescription_rediger_oppgaver">Rediger oppgaver</string>
+    <string name="contentdescription_lagre_oppgaver">Lagre oppgaver</string>
+    <string name="contentdescription_expand_collapse">Expand/Collapse</string>
+    <string name="contentdescription_alle_oppgaver_avkrysset">Alle oppgaver avkrysset</string>
+
+
 </resources>
