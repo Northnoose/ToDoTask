@@ -34,9 +34,7 @@ import com.example.todotask.R
 import com.example.todotask.data.MyCheckList
 import androidx.compose.ui.res.stringResource
 
-
-
-// --- Ny composable for header med inline ikon ---
+// Ny composable for header med inline ikon
 @Composable
 fun CheckListHeaderWithIcon(name: String, @androidx.annotation.DrawableRes iconRes: Int, modifier: Modifier = Modifier) {
     val inlineId = "listIcon"
