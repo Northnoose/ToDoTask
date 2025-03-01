@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -22,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import com.example.todotask.R
 import com.example.todotask.data.MyCheckList
 
-// Ny composable for header med inline ikon i to-kolonnevisning
 @Composable
 fun CheckListHeaderWithIconTwoColumn(name: String, @androidx.annotation.DrawableRes iconRes: Int, modifier: Modifier = Modifier) {
     val inlineId = "listIcon"
@@ -76,12 +75,11 @@ fun CheckListItemTwoColumn(
     onDelete: () -> Unit,
     onToggle: (Int) -> Unit,
     onRename: (String) -> Unit,
-    onEditItem: (Int, String) -> Unit,
     onDeleteItem: (Int) -> Unit,
     onAddItem: (String) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    var isEditing by remember { mutableStateOf(false) }
+    val isEditing by remember { mutableStateOf(false) }
     var isEditingListName by remember { mutableStateOf(false) }
     var editedItems by remember { mutableStateOf(checkList.items.map { it.text }) }
     var itemToDelete by remember { mutableIntStateOf(-1) }
@@ -103,9 +101,7 @@ fun CheckListItemTwoColumn(
             .padding(8.dp)
             .animateContentSize()
     ) {
-        Column(
-            modifier = Modifier.padding(8.dp)
-        ) {
+        Column(modifier = Modifier.padding(8.dp)) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -232,7 +228,8 @@ fun CheckListItemTwoColumn(
                         }
                         Checkbox(
                             checked = task.checked,
-                            onCheckedChange = { onToggle(indexItem) }
+                            onCheckedChange = { onToggle(indexItem) },
+                            modifier = Modifier.testTag("TaskToggle")
                         )
                     }
                 }
@@ -244,21 +241,19 @@ fun CheckListItemTwoColumn(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Knapp for å kryss av alle oppgaver
                     IconButton(
                         onClick = {
-                            if (isEditing) {
-                                editedItems.forEachIndexed { i, newText ->
-                                    onEditItem(i, newText)
+                            checkList.items.forEachIndexed { index, task ->
+                                if (!task.checked) {
+                                    onToggle(index)
                                 }
-                                isEditing = false
-                            } else {
-                                isEditing = true
                             }
                         }
                     ) {
                         Icon(
-                            imageVector = if (isEditing) Icons.Default.Check else Icons.Default.Create,
-                            contentDescription = if (isEditing) "Lagre oppgaver" else "Rediger oppgaver"
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Kryss av alle oppgaver"
                         )
                     }
                 }
@@ -281,7 +276,6 @@ fun CheckListItemTwoColumn(
                     dialogType = null
                 }) {
                     Text(stringResource(R.string.btn_slett))
-
                 }
             },
             dismissButton = {

@@ -10,6 +10,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.todotask.R
 
@@ -24,9 +25,10 @@ fun NewCheckListDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.dialog_gi_navn_til_sjekkliste)) },
+        // Endret tittel her:
+        title = { Text(stringResource(R.string.dialog_gi_navn_til_sjekkliste_2)) },
         text = {
-            Column {
+            Column(modifier = Modifier.semantics(mergeDescendants = true) { }) {
                 TextField(
                     value = checklistName,
                     onValueChange = { newValue ->
@@ -36,8 +38,13 @@ fun NewCheckListDialog(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
-                    singleLine = true
+                        .padding(8.dp)
+                        .semantics(mergeDescendants = true) { },
+                    singleLine = true,
+                    label = {
+                        // Her beholdes "Gi navn til sjekkliste" slik at den redigerbare noden får med denne teksten
+                        Text(stringResource(R.string.dialog_gi_navn_til_sjekkliste))
+                    }
                 )
             }
         },
@@ -55,5 +62,4 @@ fun NewCheckListDialog(
                 Text(stringResource(R.string.btn_avbryt))
             }
         }
-    )
-}
+    )}

@@ -92,10 +92,13 @@ class CheckListInstrumentedTest {
             CheckListScreen(viewModel = viewModel)
         }
 
+        // Først ekspander listen slik at oppgavelisten (og checkboxene) blir synlige.
+        composeTestRule.onNodeWithContentDescription("Expand/Collapse").performClick()
+
         // Hent antall fullførte oppgaver før handling
         val initialCompletedTasks = viewModel.checkLists.value.sumOf { it.items.count { item -> item.checked } }
 
-        // Klikk på første oppgave for å endre status
+        // Klikk på første oppgave for å endre status (når oppgavelisten er synlig)
         composeTestRule.onAllNodesWithTag("TaskToggle")[0].performClick()
 
         // Sjekk at antall fullførte oppgaver har endret seg

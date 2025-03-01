@@ -34,7 +34,7 @@ fun CheckListScreen(
     var isTwoColumn by remember { mutableStateOf(false) }
     var showIconPicker by remember { mutableStateOf(false) }
     var showNewChecklistDialog by remember { mutableStateOf(false) }
-    var selectedIcon by remember { mutableIntStateOf(com.example.todotask.R.drawable.baseline_shopping_cart_24) }
+    var selectedIcon by remember { mutableIntStateOf(R.drawable.baseline_shopping_cart_24) }
 
     Scaffold(
         topBar = {
@@ -136,9 +136,7 @@ fun CheckListScreen(
                             onDelete = { viewModel.deleteList(index) },
                             onToggle = { taskIndex -> viewModel.toggleTask(index, taskIndex) },
                             onRename = { newName -> viewModel.renameList(index, newName) },
-                            onEditItem = { idxItem, newText ->
-                                viewModel.renameItemList(index, idxItem, newText)
-                            },
+
                             onDeleteItem = { idxItem ->
                                 viewModel.deleteListItem(index, idxItem)
                             },
@@ -157,7 +155,7 @@ fun CheckListScreen(
                             onDelete = { viewModel.deleteList(index) },
                             onToggle = { itemIndex -> viewModel.toggleTask(index, itemIndex) },
                             onRename = { newName -> viewModel.renameList(index, newName) },
-                            onEditItem = { i, newText -> viewModel.renameItemList(index, i, newText) },
+
                             onDeleteItem = { i -> viewModel.deleteListItem(index, i) },
                             onAddItem = { newText -> viewModel.addListItem(index, newText) }
                         )

@@ -12,7 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -23,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.Placeholder
@@ -34,12 +34,10 @@ import com.example.todotask.R
 import com.example.todotask.data.MyCheckList
 import androidx.compose.ui.res.stringResource
 
-// Ny composable for header med inline ikon
 @Composable
 fun CheckListHeaderWithIcon(name: String, @androidx.annotation.DrawableRes iconRes: Int, modifier: Modifier = Modifier) {
     val inlineId = "listIcon"
     val annotatedText = buildAnnotatedString {
-
         appendInlineContent(inlineId, "[icon]")
         append(" ")
         append(name)
@@ -78,27 +76,21 @@ fun CheckListItem(
     onDelete: () -> Unit,
     onToggle: (Int) -> Unit,
     onRename: (String) -> Unit,
-    onEditItem: (Int, String) -> Unit,
     onDeleteItem: (Int) -> Unit,
     onAddItem: (String) -> Unit
 ) {
-    // Tilstander
     var isExpanded by remember { mutableStateOf(false) }
     var isEditingListName by remember { mutableStateOf(false) }
     var newName by remember { mutableStateOf(checkList.name) }
-    var isEditingTasks by remember { mutableStateOf(false) }
-    var editedItems by remember { mutableStateOf(checkList.items.map { it.text }) }
-    var itemToDelete by remember { mutableIntStateOf(-1) }
-    var dialogType by remember { mutableStateOf<DialogType?>(null) }
     var showNewItemDialog by remember { mutableStateOf(false) }
     var newItemName by remember { mutableStateOf("") }
+    var itemToDelete by remember { mutableIntStateOf(-1) }
+    var dialogType by remember { mutableStateOf<DialogType?>(null) }
 
-    // teller
     val totalItems = checkList.items.size
     val checkedItems = checkList.items.count { it.checked }
     val allChecked = (totalItems > 0 && checkedItems == totalItems)
 
-    // Animasjon for boble
     val bubbleColor by animateColorAsState(
         targetValue = if (allChecked) Color(0xFF4CAF50) else MaterialTheme.colorScheme.primary,
         animationSpec = tween(durationMillis = 500)
@@ -111,7 +103,6 @@ fun CheckListItem(
             .animateContentSize()
     ) {
         Column {
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -133,7 +124,6 @@ fun CheckListItem(
                         Icon(
                             imageVector = Icons.Default.Check,
                             contentDescription = stringResource(R.string.btn_lagre)
-
                         )
                     }
                 } else {
@@ -150,7 +140,6 @@ fun CheckListItem(
                     }
                 }
 
-                // Boble med antall avkryssede oppgaver
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 13.dp)
@@ -173,7 +162,6 @@ fun CheckListItem(
                     }
                 }
 
-                // Expand/Collapse-knapp
                 IconButton(onClick = { isExpanded = !isExpanded }) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.baseline_arrow_back_ios_new_24),
@@ -183,7 +171,6 @@ fun CheckListItem(
                 }
             }
 
-            // Oppgaveliste
             if (isExpanded) {
                 checkList.items.forEachIndexed { itemIndex, task ->
                     Row(
@@ -192,24 +179,10 @@ fun CheckListItem(
                             .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (isEditingTasks) {
-                            TextField(
-                                value = editedItems[itemIndex],
-                                onValueChange = { newText ->
-                                    editedItems = editedItems.toMutableList().apply {
-                                        set(itemIndex, newText)
-                                    }
-                                },
-                                singleLine = true,
-                                textStyle = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.weight(1f)
-                            )
-                        } else {
-                            Text(
-                                text = task.text,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
+                        Text(
+                            text = task.text,
+                            modifier = Modifier.weight(1f)
+                        )
                         IconButton(onClick = {
                             itemToDelete = itemIndex
                             dialogType = DialogType.ITEM
@@ -217,18 +190,18 @@ fun CheckListItem(
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = stringResource(R.string.contentdescription_slett_oppgave)
-
                             )
                         }
                         Checkbox(
                             checked = task.checked,
-                            onCheckedChange = { onToggle(itemIndex) }
+                            onCheckedChange = { onToggle(itemIndex) },
+                            modifier = Modifier.testTag("TaskToggle")
                         )
                     }
                 }
             }
 
-            // Bunn-rad med slett, ny oppgave og rediger oppgaver
+            // Bunn-rad: Slett, legg til oppgave og kryss av alle oppgaver
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -258,25 +231,20 @@ fun CheckListItem(
                         modifier = Modifier.size(30.dp)
                     )
                 }
+                // Knapp for å kryss av alle oppgaver
                 IconButton(
                     onClick = {
-                        if (isEditingTasks) {
-                            editedItems.forEachIndexed { i, newText ->
-                                onEditItem(i, newText)
+                        checkList.items.forEachIndexed { index, task ->
+                            if (!task.checked) {
+                                onToggle(index)
                             }
-                            isEditingTasks = false
-                        } else {
-                            isEditingTasks = true
                         }
                     },
                     modifier = Modifier.size(30.dp)
                 ) {
                     Icon(
-                        imageVector = if (isEditingTasks) Icons.Default.Check else Icons.Default.Create,
-                        contentDescription = if (isEditingTasks)
-                            stringResource(R.string.contentdescription_lagre_oppgaver)
-                        else
-                            stringResource(R.string.contentdescription_rediger_oppgaver),
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Kryss av alle oppgaver",
                         modifier = Modifier.size(30.dp)
                     )
                 }

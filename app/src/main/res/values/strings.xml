@@ -20,7 +20,7 @@
     <!-- Dialoger -->
     <string name="dialog_ny_oppgave">Ny oppgave</string>
     <string name="dialog_oppgavenavn">Oppgavenavn</string>
-    <string name="dialog_gi_navn_til_sjekkliste">Gi navn til sjekklisten</string>
+    <string name="dialog_gi_navn_til_sjekkliste">Gi navn til sjekkliste</string>
     <string name="dialog_velg_ikon">Velg et ikon</string>
     <string name="dialog_bekreft_sletting">Bekreft sletting</string>
     <string name="dialog_sikker_sletting">Er du sikker på at du vil slette dette elementet?</string>
